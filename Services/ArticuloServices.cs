@@ -16,7 +16,7 @@ public class ArticuloServices
 
 	public async Task<decimal> Elprecio(Articulos articulos)
 	{
-		decimal precio = articulos.Costo * (articulos.Ganancia / 100) + articulos.Costo;
+		decimal precio = (articulos.Costo * (articulos.Ganancia / 100)) + articulos.Costo;
 		articulos.Precio = precio;
 		return articulos.Precio;
 	}
