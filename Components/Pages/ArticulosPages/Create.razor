@@ -1,0 +1,85 @@
+﻿@page "/Articulos/Create"
+@inject ArticuloServices articuloService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+<EditForm Model="articulos" OnValidSubmit="Crear">
+    <DataAnnotationsValidator />
+    <div class="container">
+        <div class="shadow-lg">
+            @*Header*@
+            <div class="card-header">
+                <h3><strong>Crear Nuevo Articulo</strong></h3>
+            </div>
+            @*Body*@
+            <div class="card-body">
+                @*Descripcion*@
+                <label class="form-label">Descripcion</label>
+                <InputText class="form-control" @bind-Value="articulos.Descripcion"></InputText>
+                <ValidationMessage For="(()=> articulos.Descripcion)" />
+                @*Costo*@
+                <label class="form-label">Costo</label>
+                <InputNumber class="form-control" @bind-Value="articulos.Costo"></InputNumber>
+                <ValidationMessage For="(()=> articulos.Costo)" />
+                @*Ganancia*@
+                <label class="form-label">Ganancia</label>
+                <InputNumber class="form-control" @bind-Value="articulos.Ganancia"></InputNumber>
+                <ValidationMessage For="(()=> articulos.Ganancia)" />
+            </div>
+            @*Footer*@
+            <div class="card-footer">
+                <button type="button" class="btn btn-outline-secondary" @onclick="VolverIndex"> Volver</button>
+                <button type="button" class="btn btn-outline-primary" @onclick="Nuevo"> Nuevo</button>
+                <button type="submit" class="btn btn-outline-success" @onclick="Crear"> Crear</button>
+            </div>
+        </div>
+    </div>
+    @Notificacion
+</EditForm>
+@code {
+    public Articulos articulos { get; set; } = new Articulos();
+    public string? Notificacion { get; set; }
+    private bool clonado = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+    }
+
+
+    public async Task Nuevo()
+    {
+        articulos = new Articulos();
+        clonado = false;
+    }
+
+
+    public async Task Crear()
+    {
+        if (!await Validar())
+        {
+            var crear = await articuloService.Guardar(articulos);
+            var precio = await articuloService.Elprecio(articulos);
+            Notificacion = "Se agregado el articulo correctamente.";
+            Nuevo();
+            VolverIndex();
+        }
+        else
+            Notificacion = "Ya existe un Articulo esa descripcion.";
+    }
+
+
+
+    public async Task<bool> Validar()
+    {
+        var existe = await articuloService.Listar(l => l.Descripcion.ToLower() == articulos.Descripcion.ToLower()
+        && l.ArticuloId != articulos.ArticuloId);
+        clonado = existe.Any();
+        return clonado;
+    }
+
+    public void VolverIndex()
+    {
+        navigationManager.NavigateTo("/Articulos/Index");
+    }
+}
