@@ -1,4 +1,8 @@
 using AP1_P1_MarcosRosario.Components;
+using AP1_P1_MarcosRosario.DAL;
+using AP1_P1_MarcosRosario.Models;
+using AP1_P1_MarcosRosario.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +11,13 @@ builder.Services.AddBlazorBootstrap();
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+var ConStr = builder.Configuration.GetConnectionString("ConStr");
+
+builder.Services.AddDbContext<Contexto>(Options => Options.UseSqlite(ConStr));
+
+builder.Services.AddScoped<Articulos>();
+builder.Services.AddScoped<ArticuloServices>();
 
 var app = builder.Build();
 
