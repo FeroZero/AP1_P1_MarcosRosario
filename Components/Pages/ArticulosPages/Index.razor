@@ -1,0 +1,78 @@
+﻿@page "/Articulos/Index"
+@inject ArticuloServices articuloService
+@inject NavigationManager naviagationManager
+@rendermode InteractiveServer
+<PageTitle>Articulos</PageTitle>
+<div class="container">
+	<div class="shadow-lg">
+		@*Header*@
+		<div class="card-header">
+			<div class="text-center">
+				<h3><strong>Lista de Articulos</strong></h3>
+			</div>
+			<div class="text-end">
+				<button class="btn btn-outline-primary" @onclick="Create">Create</button>
+			</div>
+		</div>
+		@*Body*@
+		<div class="card-body">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Id</th>
+						<th>Articulos</th>
+						<th>Costo</th>
+						<th>Ganancia</th>
+						<th>Precio</th>
+						<th>Edit</th>
+						<th>Delete</th>
+					</tr>
+				</thead>
+
+				<tbody>
+					@foreach (var articulos in ListaArticulo)
+					{
+						<tr>
+							<td>@articulos.ArticuloId</td>
+							<td>@articulos.Descripcion</td>
+							<td>@articulos.Costo</td>
+							<td>@articulos.Ganancia %</td>
+							<td>@articulos.Precio</td>
+							<td><button type="button" class="btn btn-outline-warning" @onclick="()=> Edit(articulos.ArticuloId)">Editar</button></td>
+							<td><button type="button" class="btn btn-outline-danger" @onclick="()=> Delete(articulos.ArticuloId)">Eliminar</button></td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+
+
+@code {
+	public List<Articulos> ListaArticulo = new List<Articulos>();
+	//public Articulos Articulo = new Articulos();
+
+	protected override async Task OnInitializedAsync()
+	{
+		ListaArticulo = await articuloService.Listar(a => a.ArticuloId > 0);	
+	}
+
+	
+
+	public void Create()
+	{
+		naviagationManager.NavigateTo("/Articulos/Create");
+	}
+
+	public void Edit(int id)
+	{
+		naviagationManager.NavigateTo("/Articulos/Edit");
+	}
+
+	public void Delete(int id)
+	{
+		naviagationManager.NavigateTo("/Articulos/Delete");
+	}
+}
